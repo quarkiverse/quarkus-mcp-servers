@@ -1,0 +1,23 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - jdbcUrl
+    properties:
+      jdbcUrl:
+        type: string
+        description: The JDBC URL for the database connection.
+      user:
+        type: string
+        description: The database user name.
+      password:
+        type: string
+        description: The database user password.
+  commandFunction:
+    # A function that produces the CLI command to start the MCP on stdio.
+    |-
+    (config) => ({ command: 'jbang', args: ['mcp-server-jdbc@quarkusio', config.jdbcUrl].concat(config.user ? ['-u', config.user] : []).concat(config.password ? ['-p', config.password] : []) })
