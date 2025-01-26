@@ -1,5 +1,7 @@
 # Model Context Protocol Servers in Quarkus/Java
 
+[![smithery badge](https://smithery.ai/badge/@quarkiverse/quarkus-mcp-servers)](https://smithery.ai/server/@quarkiverse/quarkus-mcp-servers)
+
 This project contains https://modelcontextprotocol.io/[Model Context Protocol] servers,
 implemented in Java using the https://github.com/quarkiverse/quarkus-mcp-server[Quarkus MCP server framework].
 
@@ -7,6 +9,14 @@ These lets you extend the capabilites of your MCP enabled LLM (Large Language Mo
 
 These also work in MCP enabled LLM applications, like Claude Desktop. You can find other clients on
 https://github.com/punkpeye/awesome-mcp-clients[Awesome MCP Clients] page.
+
+### Installing via Smithery
+
+To install Quarkus MCP Servers for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@quarkiverse/quarkus-mcp-servers):
+
+```bash
+npx -y @smithery/cli install @quarkiverse/quarkus-mcp-servers --client claude
+```
 
 ## Servers
 
@@ -58,5 +68,6 @@ Other ideas:
 - jfr/java hooked to jmx/jfr
 - quarkus dev mode
 - ...
+
 
 
