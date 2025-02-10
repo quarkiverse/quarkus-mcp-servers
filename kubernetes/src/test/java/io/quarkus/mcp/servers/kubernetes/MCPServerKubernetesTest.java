@@ -1,16 +1,18 @@
 package io.quarkus.mcp.servers.kubernetes;
 
-import io.fabric8.kubernetes.api.model.ConfigMap;
+import dev.langchain4j.agent.tool.ToolExecutionRequest;
+import dev.langchain4j.mcp.client.DefaultMcpClient;
+import dev.langchain4j.mcp.client.McpClient;
+import dev.langchain4j.mcp.client.transport.http.HttpMcpTransport;
 import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
 import io.fabric8.kubernetes.api.model.GenericKubernetesResource;
-import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.NamespaceBuilder;
-import io.fabric8.kubernetes.api.model.Node;
 import io.fabric8.kubernetes.api.model.NodeBuilder;
-import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
 import io.fabric8.kubernetes.api.model.ServiceAccountBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.NonDeletingOperation;
+import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
+import java.net.URL;
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -35,12 +39,23 @@ class MCPServerKubernetesTest {
 
   @Inject
   KubernetesClient kubernetesClient;
-  @Inject
-  MCPServerKubernetes server;
+  @TestHTTPResource
+  URL url;
+  private McpClient mcpClient;
+
+  @BeforeEach
+  void setUpMcpClient() {
+    mcpClient = new DefaultMcpClient.Builder()
+      .clientName("test-mcp-client-kubernetes")
+      .toolExecutionTimeout(Duration.ofSeconds(10))
+      .transport(new HttpMcpTransport.Builder().sseUrl(url.toString() + "mcp/sse").build())
+      .build();
+  }
 
   @Test
   void configuration_get_returnsTestKubernetesMasterUrl() {
-    assertThat(unmarshal(server.configuration_get(), GenericKubernetesResource.class))
+    final var ret = mcpClient.executeTool(ToolExecutionRequest.builder().name("configuration_get").arguments("{}").build());
+    assertThat(unmarshal(ret))
       .extracting(gkr -> gkr.get("masterUrl")).asString()
       .startsWith("https://localhost:");
   }
@@ -50,12 +65,19 @@ class MCPServerKubernetesTest {
 
     @Test
     void resources_list_clusterScopedWithIgnoredNamespace() {
-      kubernetesClient.nodes()
-        .resource(new NodeBuilder().withNewMetadata().withName("a-node-to-list").endMetadata().build())
-        .serverSideApply();
-      assertThat(unmarshalList(server.resources_list("v1", "Node", "ignored"), GenericKubernetesResource.class))
+      for (int it = 1; it <= 2; it++) {
+        kubernetesClient.nodes()
+          .resource(new NodeBuilder().withMetadata(new ObjectMetaBuilder()
+            .withName("a-node-to-list-" + it)
+            .addNewManagedField().withManager("the-manager").endManagedField()
+            .build()).build())
+          .serverSideApply();
+      }
+      final var ret = mcpClient.executeTool(ToolExecutionRequest.builder().name("resources_list")
+        .arguments("{\"apiVersion\":\"v1\",\"kind\":\"Node\",\"namespace\":\"ignored\"}").build());
+      assertThat(unmarshalList(ret))
         .extracting("kind", "metadata.name")
-        .contains(tuple("Node", "a-node-to-list"));
+        .contains(tuple("Node", "a-node-to-list-1"), tuple("Node", "a-node-to-list-2"));
     }
 
     @Test
@@ -70,7 +92,9 @@ class MCPServerKubernetesTest {
         .inNamespace("other-namespace")
         .resource(new ConfigMapBuilder().withNewMetadata().withName("a-configmap-to-list-in-other-namespace").endMetadata().build())
         .serverSideApply();
-      assertThat(unmarshalList(server.resources_list("v1", "ConfigMap", null), GenericKubernetesResource.class))
+      final var ret = mcpClient.executeTool(ToolExecutionRequest.builder().name("resources_list")
+        .arguments("{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\"}").build());
+      assertThat(unmarshalList(ret))
         .extracting("kind", "metadata.namespace", "metadata.name")
         .contains(
           tuple("ConfigMap", "default", "a-configmap-to-list"),
@@ -83,7 +107,9 @@ class MCPServerKubernetesTest {
       kubernetesClient.nodes()
         .resource(new NodeBuilder().withNewMetadata().withName("a-node-to-get").endMetadata().build())
         .serverSideApply();
-      assertThat(unmarshal(server.resources_get("v1", "Node", "ignored", "a-node-to-get"), Node.class))
+      final var ret = mcpClient.executeTool(ToolExecutionRequest.builder().name("resources_get")
+        .arguments("{\"apiVersion\":\"v1\",\"kind\":\"Node\",\"namespace\":\"ignored\",\"name\":\"a-node-to-get\"}").build());
+      assertThat(unmarshal(ret))
         .hasFieldOrPropertyWithValue("metadata.name", "a-node-to-get");
     }
 
@@ -92,22 +118,32 @@ class MCPServerKubernetesTest {
       kubernetesClient.configMaps()
         .resource(new ConfigMapBuilder().withNewMetadata().withName("a-configmap-to-get").endMetadata().build())
         .serverSideApply();
-      assertThat(unmarshal(server.resources_get("v1", "ConfigMap", "default", "a-configmap-to-get"), ConfigMap.class))
+      final var ret = mcpClient.executeTool(ToolExecutionRequest.builder().name("resources_get")
+        .arguments("{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"namespace\":\"default\",\"name\":\"a-configmap-to-get\"}").build());
+      assertThat(unmarshal(ret))
         .hasFieldOrPropertyWithValue("metadata.name", "a-configmap-to-get");
     }
 
     @Test
     void resources_create_or_update_clusterScopedWithIgnoredNamespace() {
-      assertThat(server.resources_create_or_update("{\"apiVersion\":\"v1\",\"kind\":\"Node\",\"metadata\":{\"name\":\"a-node-to-create\"}}"))
-        .startsWith("{\"apiVersion\":\"v1\",\"kind\":\"Node\",\"metadata\":{");
+      final var ret = mcpClient.executeTool(ToolExecutionRequest.builder().name("resources_create_or_update")
+        .arguments("{\"resource\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"kind\\\":\\\"Node\\\",\\\"metadata\\\":{\\\"name\\\":\\\"a-node-to-create\\\"}}\"}").build());
+      assertThat(unmarshal(ret))
+        .hasFieldOrPropertyWithValue("apiVersion", "v1")
+        .hasFieldOrPropertyWithValue("kind", "Node")
+        .hasFieldOrPropertyWithValue("metadata.name", "a-node-to-create");
       assertThat(kubernetesClient.nodes().withName("a-node-to-create").get())
         .hasFieldOrPropertyWithValue("metadata.name", "a-node-to-create");
     }
 
     @Test
     void resources_create_or_update_namespaceScoped() {
-      assertThat(server.resources_create_or_update("{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"a-configmap-to-create\"}}"))
-        .startsWith("{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{");
+      final var ret = mcpClient.executeTool(ToolExecutionRequest.builder().name("resources_create_or_update")
+        .arguments("{\"resource\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"name\\\":\\\"a-configmap-to-create\\\"}}\"}").build());
+      assertThat(unmarshal(ret))
+        .hasFieldOrPropertyWithValue("apiVersion", "v1")
+        .hasFieldOrPropertyWithValue("kind", "ConfigMap")
+        .hasFieldOrPropertyWithValue("metadata.name", "a-configmap-to-create");
       assertThat(kubernetesClient.configMaps().inNamespace("default").withName("a-configmap-to-create").get())
         .hasFieldOrPropertyWithValue("metadata.name", "a-configmap-to-create");
     }
@@ -117,7 +153,9 @@ class MCPServerKubernetesTest {
       kubernetesClient.nodes()
         .resource(new NodeBuilder().withNewMetadata().withName("a-node-to-delete").endMetadata().build())
         .serverSideApply();
-      assertThat(server.resources_delete("v1", "Node", "ignored", "a-node-to-delete"))
+      final var ret = mcpClient.executeTool(ToolExecutionRequest.builder().name("resources_delete")
+        .arguments("{\"apiVersion\":\"v1\",\"kind\":\"Node\",\"namespace\":\"ignored\",\"name\":\"a-node-to-delete\"}").build());
+      assertThat(ret)
         .isEqualTo("Resource deleted successfully");
     }
 
@@ -126,7 +164,9 @@ class MCPServerKubernetesTest {
       kubernetesClient.configMaps()
         .resource(new ConfigMapBuilder().withNewMetadata().withName("a-configmap-to-delete").endMetadata().build())
         .serverSideApply();
-      assertThat(server.resources_delete("v1", "ConfigMap", "default", "a-configmap-to-delete"))
+      final var ret = mcpClient.executeTool(ToolExecutionRequest.builder().name("resources_delete")
+        .arguments("{\"apiVersion\":\"v1\",\"kind\":\"Node\",\"namespace\":\"default\",\"name\":\"a-configmap-to-delete\"}").build());
+      assertThat(ret)
         .isEqualTo("Resource deleted successfully");
     }
   }
@@ -136,7 +176,8 @@ class MCPServerKubernetesTest {
     kubernetesClient.namespaces()
       .resource(new NamespaceBuilder().withNewMetadata().withName("a-namespace-to-list").endMetadata().build())
       .serverSideApply();
-    assertThat(unmarshalList(server.namespaces_list(), Namespace.class))
+    final var ret = mcpClient.executeTool(ToolExecutionRequest.builder().name("namespaces_list").arguments("{}").build());
+    assertThat(unmarshalList(ret))
       .extracting("metadata.name")
       .contains("a-namespace-to-list");
   }
@@ -157,7 +198,8 @@ class MCPServerKubernetesTest {
         .withName("a-pod-to-list")
         .withImage("busybox")
         .done();
-      assertThat(unmarshalList(server.pods_list(), Pod.class))
+      final var ret = mcpClient.executeTool(ToolExecutionRequest.builder().name("pods_list").arguments("{}").build());
+      assertThat(unmarshalList(ret))
         .extracting("metadata.name")
         .contains("a-pod-to-list");
     }
@@ -168,7 +210,9 @@ class MCPServerKubernetesTest {
         .withName("a-pod-to-list-in-namespace")
         .withImage("busybox")
         .done();
-      assertThat(unmarshalList(server.pods_list_in_namespace("default"), Pod.class))
+      final var ret = mcpClient.executeTool(ToolExecutionRequest.builder().name("pods_list")
+        .arguments("{\"namespace\":\"default\"}").build());
+      assertThat(unmarshalList(ret))
         .extracting("metadata.name")
         .contains("a-pod-to-list-in-namespace");
     }
@@ -179,7 +223,9 @@ class MCPServerKubernetesTest {
         .withName("a-pod-to-get")
         .withImage("busybox")
         .done();
-      assertThat(unmarshal(server.pods_get(null, "a-pod-to-get"), Pod.class))
+      final var ret = mcpClient.executeTool(ToolExecutionRequest.builder().name("pods_get")
+        .arguments("{\"name\":\"a-pod-to-get\"}").build());
+      assertThat(unmarshal(ret))
         .extracting("metadata.name")
         .isEqualTo("a-pod-to-get");
     }
@@ -190,7 +236,9 @@ class MCPServerKubernetesTest {
         .withName("a-pod-to-delete")
         .withImage("busybox")
         .done();
-      assertThat(server.pods_delete(null, "a-pod-to-delete"))
+      final var ret = mcpClient.executeTool(ToolExecutionRequest.builder().name("pods_delete")
+        .arguments("{\"name\":\"a-pod-to-delete\"}").build());
+      assertThat(ret)
         .isEqualTo("Pod deleted successfully");
     }
 
@@ -200,13 +248,16 @@ class MCPServerKubernetesTest {
         .withName("a-pod-to-log")
         .withImage("busybox")
         .done();
-      assertThat(server.pods_log("default", "a-pod-to-log"))
+      final var ret = mcpClient.executeTool(ToolExecutionRequest.builder().name("pods_log")
+        .arguments("{\"namespace\":\"default\",\"name\":\"a-pod-to-log\"}").build());
+      assertThat(ret)
         .isBlank();
     }
 
     @Test
     void pods_run_startsPod() {
-      server.pods_run("default", "a-pod-to-run", "busybox", null);
+      mcpClient.executeTool(ToolExecutionRequest.builder().name("pods_run")
+        .arguments("{\"namespace\":\"default\",\"name\":\"a-pod-to-run\",\"image\":\"busybox\"}").build());
       assertThat(kubernetesClient.pods().inNamespace("default").withName("a-pod-to-run")
         .waitUntilCondition(Objects::nonNull, 10, TimeUnit.SECONDS))
         .isNotNull()
@@ -215,7 +266,9 @@ class MCPServerKubernetesTest {
 
     @Test
     void pods_run_returnsPodInfo() {
-      assertThat(unmarshalList(server.pods_run("default", "a-pod-to-run-2", "busybox", null), Pod.class))
+      final var ret = mcpClient.executeTool(ToolExecutionRequest.builder().name("pods_run")
+        .arguments("{\"namespace\":\"default\",\"name\":\"a-pod-to-run-2\",\"image\":\"busybox\"}").build());
+      assertThat(unmarshalList(ret))
         .extracting("kind", "metadata.name")
         .contains(
           tuple("Pod", "a-pod-to-run-2")
@@ -224,7 +277,9 @@ class MCPServerKubernetesTest {
 
     @Test
     void pods_run_returnsServiceInfo() {
-      assertThat(unmarshalList(server.pods_run("default", "a-pod-to-run-with-service", "busybox", 8080), GenericKubernetesResource.class))
+      final var ret = mcpClient.executeTool(ToolExecutionRequest.builder().name("pods_run")
+        .arguments("{\"namespace\":\"default\",\"name\":\"a-pod-to-run-with-service\",\"image\":\"busybox\",\"port\":8080}").build());
+      assertThat(unmarshalList(ret))
         .extracting("kind", "metadata.name")
         .contains(
           tuple("Pod", "a-pod-to-run-with-service"),
@@ -234,11 +289,11 @@ class MCPServerKubernetesTest {
   }
 
   @SuppressWarnings("unchecked")
-  private <T> List<T> unmarshalList(String json, Class<T> clazz) {
+  private List<GenericKubernetesResource> unmarshalList(String json) {
     return kubernetesClient.getKubernetesSerialization().unmarshal(json, List.class);
   }
 
-  private <T> T unmarshal(String json, Class<T> clazz) {
-    return kubernetesClient.getKubernetesSerialization().unmarshal(json, clazz);
+  private GenericKubernetesResource unmarshal(String json) {
+    return kubernetesClient.getKubernetesSerialization().unmarshal(json, GenericKubernetesResource.class);
   }
 }

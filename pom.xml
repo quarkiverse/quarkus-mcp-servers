@@ -35,7 +35,7 @@
          <mcp.server.version>999-SNAPSHOT</mcp.server.version>
     -->
         <mcp.server.version>1.0.0.Beta1</mcp.server.version>
-        <langchain4j.version>1.0.0-alpha1</langchain4j.version>
+        <langchain4j.version>1.0.0-beta1</langchain4j.version>
 
     </properties>
 
@@ -54,7 +54,7 @@
             <version>${assertj.version}</version>
             <scope>test</scope>
           </dependency>
-          
+
         </dependencies>
     </dependencyManagement>
 

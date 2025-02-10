@@ -6,9 +6,13 @@ package io.quarkus.mcp.servers.kubernetes;
 //DEPS io.quarkiverse.mcp:quarkus-mcp-server-stdio:1.0.0.Beta1
 //DEPS io.fabric8:openshift-model
 
+import io.fabric8.kubernetes.api.model.GenericKubernetesResource;
 import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.Namespace;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
+import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.NonDeletingOperation;
 import io.fabric8.openshift.api.model.Route;
@@ -24,10 +28,11 @@ import io.quarkiverse.mcp.server.ToolCallException;
 
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings("unused")
 @ApplicationScoped
 public class MCPServerKubernetes {
 
@@ -47,16 +52,16 @@ public class MCPServerKubernetes {
   }
 
   @Tool(description = "Get the current Kubernetes configuration")
-  public String configuration_get() {
+  public Config configuration_get() {
     try {
-      return asJson(kubernetesClient.getConfiguration());
+      return kubernetesClient.getConfiguration();
     } catch (Exception e) {
       throw new ToolCallException("Failed to get configuration: " + e.getMessage(), e);
     }
   }
 
   @Tool(description = "List Kubernetes resources in the current cluster by providing their apiVersion and kind and optionally the namespace")
-  public String resources_list(
+  public Collection<GenericKubernetesResource> resources_list(
     @ToolArg(description = "apiVersion of the resources (examples of valid apiVersion are: v1, apps/v1, networking.k8s.io/v1") String apiVersion,
     @ToolArg(description = "kind of the resources (examples of valid kind are: Pod, Service, Deployment, Ingress)") String kind,
     @ToolArg(description = "Namespace to retrieve the namespaced resources from (ignored in case of cluster scoped resources)", required = false) String namespace
@@ -64,12 +69,12 @@ public class MCPServerKubernetes {
     try {
       final var resource = kubernetesClient.genericKubernetesResources(apiVersion, kind);
       if (namespace != null && !namespace.isBlank()) {
-        return asJson(resource.inNamespace(namespace).list().getItems());
+        return resource.inNamespace(namespace).list().getItems();
       }
       try {
-        return asJson(resource.inAnyNamespace().list().getItems());
+        return resource.inAnyNamespace().list().getItems();
       } catch (Exception e) {
-        return asJson(resource.list().getItems());
+        return resource.list().getItems();
       }
     } catch (Exception e) {
       throw new ToolCallException("Failed to get resources for " + apiVersion + " " + kind + ": " + e.getMessage(), e);
@@ -77,30 +82,28 @@ public class MCPServerKubernetes {
   }
 
   @Tool(description = "Get a Kubernetes resource in the current cluster by providing its apiVersion, kind, optionally the namespace, and its name")
-  public String resources_get(
+  public GenericKubernetesResource resources_get(
     @ToolArg(description = "apiVersion of the resources (examples of valid apiVersion are: v1, apps/v1, networking.k8s.io/v1") String apiVersion,
     @ToolArg(description = "kind of the resources (examples of valid kind are: Pod, Service, Deployment, Ingress)") String kind,
     @ToolArg(description = "Namespace to retrieve the namespaced resource from (ignored in case of cluster scoped resources)", required = false) String namespace,
     @ToolArg(description = "Name of the resource", required = false) String name
   ) {
     try {
-      return asJson(
-        kubernetesClient.genericKubernetesResources(apiVersion, kind)
-          .inNamespace(namespace == null ? kubernetesClient.getNamespace() : namespace)
-          .withName(name)
-          .get()
-      );
+      return kubernetesClient.genericKubernetesResources(apiVersion, kind)
+        .inNamespace(namespace == null ? kubernetesClient.getNamespace() : namespace)
+        .withName(name)
+        .get();
     } catch (Exception e) {
       throw new ToolCallException("Failed to get the resource for " + apiVersion + " " + kind + ": " + e.getMessage(), e);
     }
   }
 
   @Tool(description = "Create or update a Kubernetes resource in the current cluster by providing a YAML or JSON representation of the resource")
-  public String resources_create_or_update(
+  public HasMetadata resources_create_or_update(
     @ToolArg(description = "A JSON or YAML containing a representation of the Kubernetes resource. Should include top-level fields such as apiVersion,kind,metadata, and spec") String resource
   ) {
     try {
-      return asJson(kubernetesClient.resource(resource).createOr(NonDeletingOperation::update));
+      return kubernetesClient.resource(resource).createOr(NonDeletingOperation::update);
     } catch (Exception e) {
       throw new ToolCallException("Failed to create or update the resource: " + e.getMessage(), e);
     }
@@ -126,21 +129,21 @@ public class MCPServerKubernetes {
   }
 
   @Tool(description = "List all the Kubernetes namespaces in the current cluster")
-  public String namespaces_list() {
+  public Collection<Namespace> namespaces_list() {
     try {
-      return asJson(kubernetesClient.namespaces().list().getItems());
+      return kubernetesClient.namespaces().list().getItems();
     } catch (Exception e) {
       throw new ToolCallException("Failed to list namespaces: " + e.getMessage(), e);
     }
   }
 
   @Tool(description = "List all the Kubernetes pods in the current cluster")
-  public String pods_list() {
+  public Collection<Pod> pods_list() {
     try {
-      return asJson(kubernetesClient.pods().inAnyNamespace().list().getItems());
+      return kubernetesClient.pods().inAnyNamespace().list().getItems();
     } catch (Exception e) {
       try {
-        return asJson(kubernetesClient.pods().list().getItems());
+        return kubernetesClient.pods().list().getItems();
       } catch (Exception e2) {
         throw new ToolCallException("Failed to list pods: " + e2.getMessage(), e2);
       }
@@ -148,26 +151,24 @@ public class MCPServerKubernetes {
   }
 
   @Tool(description = "List all the Kubernetes pods in the specified namespace in the current cluster")
-  public String pods_list_in_namespace(@ToolArg(description = "Namespace to list pods from") String namespace) {
+  public Collection<Pod> pods_list_in_namespace(@ToolArg(description = "Namespace to list pods from") String namespace) {
     try {
-      return asJson(kubernetesClient.pods().inNamespace(namespace).list().getItems());
+      return kubernetesClient.pods().inNamespace(namespace).list().getItems();
     } catch (Exception e) {
       throw new ToolCallException("Failed to list pods in namespace: " + e.getMessage(), e);
     }
   }
 
   @Tool(description = "Get a Kubernetes Pod in the current namespace with the provided name")
-  public String pods_get(
+  public Pod pods_get(
     @ToolArg(description = "Namespace to get the Pod from", required = false) String namespace,
     @ToolArg(description = "Name of the Pod", required = false) String name
   ) {
     try {
-      return asJson(
-        kubernetesClient.pods()
-          .inNamespace(namespace == null ? kubernetesClient.getNamespace() : namespace)
-          .withName(name)
-          .get()
-      );
+      return kubernetesClient.pods()
+        .inNamespace(namespace == null ? kubernetesClient.getNamespace() : namespace)
+        .withName(name)
+        .get();
     } catch (Exception e) {
       throw new ToolCallException("Failed to get pod: " + e.getMessage(), e);
     }
@@ -224,14 +225,14 @@ public class MCPServerKubernetes {
   }
 
   @Tool(description = "Run a Kubernetes Pod in the current namespace with the provided container image and optional name")
-  public String pods_run(
+  public Collection<HasMetadata> pods_run(
     @ToolArg(description = "Namespace to run the Pod in", required = false) String namespace,
     @ToolArg(description = "Name of the Pod (Optional, random name if not provided)", required = false) String name,
     @ToolArg(description = "Container Image to run in the Pod") String image,
     @ToolArg(description = "TCP/IP port to expose from the Pod container (Optional, no port exposed if not provided)", required = false) Integer port
   ) {
     try {
-      final List<HasMetadata> createdResources = new ArrayList<>();
+      final Collection<HasMetadata> createdResources = new ArrayList<>();
       final var effectiveName = name == null ? "mcp-kubernetes-pod-" + System.currentTimeMillis() : name;
       final var effectiveNamespace = namespace == null ? kubernetesClient.getNamespace() : namespace;
       final var labels = Map.of(
@@ -270,13 +271,9 @@ public class MCPServerKubernetes {
         createdResources.add(kubernetesClient.resource(route).unlock().createOr(NonDeletingOperation::update));
       }
       createdResources.add(runCommand.done());
-      return asJson(createdResources);
+      return createdResources;
     } catch (Exception e) {
       throw new ToolCallException("Failed to run pod: " + e.getMessage(), e);
     }
-  }
-
-  private <T> String asJson(T object) {
-    return kubernetesClient.getKubernetesSerialization().asJson(object);
   }
 }
