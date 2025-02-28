@@ -15,6 +15,7 @@
         <module>filesystem</module>
         <module>jfx</module>
         <module>kubernetes</module>
+        <module>code-quarkus</module>
 
     </modules>
 
