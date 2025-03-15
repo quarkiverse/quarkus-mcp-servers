@@ -40,6 +40,9 @@ class jdbc implements Callable<Integer> {
     @Option(names = { "-p", "--password" }, description = "Password to connect to database")
     String password;
 
+    @Option(names = { "-f", "--file" }, description = "Environment file to load JDBC credentials from")
+    String file;
+
     public static void main(String... args) {
         int exitCode = new CommandLine(new jdbc()).execute(args);
         System.exit(exitCode);
@@ -98,6 +101,10 @@ class jdbc implements Callable<Integer> {
         }
         if (password != null) {
             command.add("-Djdbc.password=" + password);
+        }
+
+        if (file != null) {
+            command.add("-Djdbc.file=" + file);
         }
 
         System.getProperties().forEach((key, value) -> {

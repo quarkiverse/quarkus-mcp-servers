@@ -39,9 +39,33 @@ public class MCPServerJDBC {
 
     @ConfigProperty(name = "jdbc.password")
     Optional<String> jdbcPassword;
+
+    @ConfigProperty(name = "jdbc.file")
+    Optional<String> jdbcFile;
     
     private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(jdbcUrl, jdbcUser.orElse(null), jdbcPassword.orElse(null));
+        String user = jdbcUser.orElse(System.getenv("JDBC_USER"));
+        String password = jdbcPassword.orElse(System.getenv("JDBC_PASSWORD"));
+        
+        if (jdbcFile.isPresent()) {
+            try {
+                java.util.Properties props = new java.util.Properties();
+                props.load(new java.io.FileInputStream(jdbcFile.get()));
+                
+                // Override with properties from file if they exist
+                if (user == null && props.containsKey("jdbc.user")) {
+                    user = props.getProperty("jdbc.user");
+                }
+                if (password == null && props.containsKey("jdbc.password")) {
+                    password = props.getProperty("jdbc.password");
+                }
+                return DriverManager.getConnection(jdbcUrl, user, password);
+            } catch (java.io.IOException e) {
+                throw new SQLException("Failed to load JDBC properties from file: " + jdbcFile.get(), e);
+            }
+        }
+        
+        return DriverManager.getConnection(jdbcUrl, user, password);
     }
 
     @Tool(description = "Execute a SELECT query on the jdbc database")

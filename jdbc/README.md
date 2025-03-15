@@ -41,6 +41,17 @@ You can also specify a user and password separately, here for a PostgreSQL datab
 jbang jdbc@quarkiverse/quarkus-mcp-servers jdbc:postgresql://localhost:5432/sakila -u sakila -p p_ssW0rd
 ```
 
+You can also specify a user and password from environment parameers. properties file, here for a PostgreSQL database:
+```shell
+jbang jdbc@quarkiverse/quarkus-mcp-servers jdbc:postgresql://localhost:5432/sakila -f /path/to/properties/file
+```
+
+```properties
+# /path/to/properties/file
+jdbc.user=sakila
+jdbc.password=p_ssW0rd
+```
+
 ## Downloadable databases
 
 JBang can download files from the web and feed them directly to databases like h2 and sqlite.
