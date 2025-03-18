@@ -153,6 +153,9 @@ class jdbc implements Callable<Integer> {
         drivers.put("h2", List.of("com.h2database:h2:RELEASE"));
         // https://db.apache.org/derby/docs/10.8/devguide/cdevdvlp17453.html
         drivers.put("derby", List.of("org.apache.derby:derby:RELEASE"));
+        // DB2 Support
+        // https://www.ibm.com/support/pages/db2-jdbc-driver-versions-and-downloads
+        drivers.put("db2", List.of("com.ibm.db2.jcc.DB2Driver:RELEASE"));
         drivers.put("sqlite", List.of("org.xerial:sqlite-jdbc:RELEASE", "org.slf4j:slf4j-simple:1.7.36"));
         return drivers;
     }
@@ -183,6 +186,9 @@ class jdbc implements Callable<Integer> {
         drivers.put("h2", "org.h2.Driver");
         // https://db.apache.org/derby/docs/10.8/devguide/cdevdvlp17453.html
         drivers.put("derby", "org.apache.derby.jdbc.EmbeddedDriver");
+        // DB2 Support
+        // https://www.ibm.com/support/pages/db2-jdbc-driver-versions-and-downloads
+        drivers.put("db2", List.of("com.ibm.db2.jcc.DB2Driver"));
         drivers.put("sqlite", "org.sqlite.JDBC");
         return drivers;
     }
