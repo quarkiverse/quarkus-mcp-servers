@@ -189,7 +189,7 @@ class jdbc implements Callable<Integer> {
         drivers.put("derby", "org.apache.derby.jdbc.EmbeddedDriver");
         // DB2 Support
         // https://www.ibm.com/support/pages/db2-jdbc-driver-versions-and-downloads
-        drivers.put("db2", List.of("com.ibm.db2.jcc.DB2Driver"));
+        drivers.put("db2", "com.ibm.db2.jcc.DB2Driver");
         drivers.put("sqlite", "org.sqlite.JDBC");
         return drivers;
     }
