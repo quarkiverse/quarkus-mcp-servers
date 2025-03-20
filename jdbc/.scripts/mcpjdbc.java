@@ -49,7 +49,7 @@ class jdbc implements Callable<Integer> {
         String mcpServer = System.getProperty("mcp.jdbc.server");
         if (mcpServer == null) { // use earlyaccess version by default for now.
             // mcpServer = "https://github.com/quarkiverse/quarkus-mcp-servers/releases/download/early-access/mcp-server-jdbc.jar";
-            mcpServer = "https://github.com/mudigondas125/quarkus-mcp-servers/releases/download/early-access/mcp-server-jdbc.jar";
+            mcpServer = "https://github.com/quarkiverse/quarkus-mcp-servers/releases/download/early-access/mcp-server-jdbc.jar";
         }
         return mcpServer;
     }
