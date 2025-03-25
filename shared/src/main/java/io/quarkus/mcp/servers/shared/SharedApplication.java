@@ -3,6 +3,7 @@ package io.quarkus.mcp.servers.shared;
 import java.util.List;
 import java.util.function.Function;
 
+import io.quarkus.runtime.LaunchMode;
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
@@ -52,7 +53,8 @@ public class SharedApplication {
                 if(exception != null) {
                     exception.printStackTrace();
                 } 
-                System.exit(exitCode);
+                // If we are not running in dev mode, exit the application
+                if(!LaunchMode.isDev()) System.exit(exitCode);
                 }, 
                 args);
     }
