@@ -15,7 +15,7 @@
         <module>filesystem</module>
         <module>jfx</module>
         <module>kubernetes</module>
-
+        <module>containers</module>
     </modules>
 
     <properties>
