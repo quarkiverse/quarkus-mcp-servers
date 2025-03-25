@@ -44,6 +44,10 @@
     "kubernetes": {
       "script-ref": "https://github.com/quarkiverse/quarkus-mcp-servers/releases/download/early-access/mcp-server-kubernetes.jar",
       "java": "17+"
+    },
+    "containers": {
+      "script-ref": "https://github.com/quarkiverse/quarkus-mcp-servers/releases/download/early-access/mcp-server-containers.jar",
+      "java": "17+"
     }
   },
   "templates": {

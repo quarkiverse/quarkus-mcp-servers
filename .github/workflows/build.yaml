@@ -62,6 +62,6 @@ jobs:
       - name: Build
         run: ./mvnw -ntp -B verify
         if: matrix.native == false
-      - name: Build Native (except jfx)
-        run: ./mvnw -ntp -B -Dnative=${{ matrix.native }} -pl '!jfx' verify
+      - name: Build Native (except jfx/containers)
+        run: ./mvnw -ntp -B -Dnative=${{ matrix.native }} -pl '!jfx,!containers' verify
         if: matrix.native == true
