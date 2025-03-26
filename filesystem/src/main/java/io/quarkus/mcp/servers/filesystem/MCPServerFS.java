@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import jakarta.inject.Inject;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -21,11 +23,11 @@ import io.quarkiverse.mcp.server.ToolArg;
 import io.quarkiverse.mcp.server.ToolCallException;
 import io.quarkus.logging.Log;
 import io.quarkus.runtime.Startup;
-import jakarta.inject.Inject;
 
 public class MCPServerFS {
-    
-    @Inject FSUtil util;
+
+    @Inject
+    FSUtil util;
 
     private ObjectMapper mapper;
 
@@ -64,7 +66,7 @@ public class MCPServerFS {
     String read_multiple_files(@ToolArg(description = "List of file paths to read") List<String> paths) {
 
         Map<String, String> result = new HashMap<>();
-        
+
         try {
             for (String path : paths) {
                 var realpath = util.validateAndResolvePath(path);
@@ -100,7 +102,6 @@ public class MCPServerFS {
             throw new ToolCallException("Failed to list directory: " + e.getMessage(), e);
         }
     }
-
 
     @Tool(description = "Get a recursive tree view of files and directories as a JSON structure. Each entry includes 'name', 'type' (file/directory), and 'children' for directories. Files have no children array, while directories always have a children array (which may be empty). The output is formatted with 2-space indentation for readability. Only works within allowed directories.")
     String directory_tree(@ToolArg(description = "Root path to create tree from") String path) {
@@ -165,7 +166,7 @@ public class MCPServerFS {
 
     @Tool(description = "Returns the list of directories that this server is allowed to access. Use this to understand which directories are available before trying to access files.")
     String list_allowed_directories() {
-            return valueAsString(util.getAllowedPaths());
-        }
+        return valueAsString(util.getAllowedPaths());
+    }
 
 }

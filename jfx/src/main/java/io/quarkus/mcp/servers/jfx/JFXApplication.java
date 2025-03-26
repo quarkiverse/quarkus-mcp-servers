@@ -2,9 +2,7 @@ package io.quarkus.mcp.servers.jfx;
 
 import io.quarkiverse.fx.FxApplication;
 import io.quarkus.logging.Log;
-import io.quarkus.mcp.servers.shared.McpCliConfigSource;
 import io.quarkus.mcp.servers.shared.SharedApplication;
-import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import javafx.application.Application;
@@ -12,7 +10,7 @@ import javafx.application.Application;
 /**
  * Need this to ensure JFX is started early enough.
  */
-@QuarkusMain(name="jfx")
+@QuarkusMain(name = "jfx")
 public class JFXApplication implements QuarkusApplication {
 
     public static void main(String[] args) {

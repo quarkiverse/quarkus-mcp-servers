@@ -5,11 +5,12 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.quarkiverse.mcp.server.ToolCallException;
 import io.quarkus.logging.Log;
-import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class FSUtil {

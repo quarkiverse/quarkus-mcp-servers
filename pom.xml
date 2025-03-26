@@ -35,10 +35,10 @@
         <assertj.version>3.27.3</assertj.version>
         <surefire-plugin.version>3.5.0</surefire-plugin.version>
 
-        <!--
-                 <mcp.server.version>999-SNAPSHOT</mcp.server.version>
-            -->
-        <mcp.server.version>1.0.0.Beta5</mcp.server.version>
+<!--
+         <mcp.server.version>999-SNAPSHOT</mcp.server.version>
+    -->
+        <mcp.server.version>1.0.0.CR1</mcp.server.version>
         <langchain4j.version>1.0.0-beta2</langchain4j.version>
 
     </properties>

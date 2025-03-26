@@ -1,13 +1,15 @@
 package io.quarkus.mcp.servers.kubernetes;
 
+import java.util.List;
+
+import jakarta.inject.Singleton;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.fabric8.kubernetes.api.model.ManagedFieldsEntry;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.quarkus.kubernetes.client.KubernetesClientObjectMapperCustomizer;
-import jakarta.inject.Singleton;
-
-import java.util.List;
 
 /**
  * Default Kubernetes Client serialization customizer.
@@ -21,7 +23,8 @@ import java.util.List;
  * Any data that's not needed for the LLM to make a decision should be removed to reduce the amount of input tokens.
  * Currently, we remove the following fields:
  * <ul>
- *   <li>managedFields: Only useful for server-side apply, completely useless for LLMs (they contain redundant information already present in spec)</li>
+ * <li>managedFields: Only useful for server-side apply, completely useless for LLMs (they contain redundant information already
+ * present in spec)</li>
  * </ul>
  */
 @Singleton
@@ -29,17 +32,17 @@ public class ObjectMapperCustomizer implements KubernetesClientObjectMapperCusto
 
     @Override
     public void customize(ObjectMapper objectMapper) {
-      objectMapper.addMixIn(ObjectMeta.class, ObjectMetaMixin.class);
+        objectMapper.addMixIn(ObjectMeta.class, ObjectMetaMixin.class);
     }
 
     @SuppressWarnings("unused")
     public static abstract class ObjectMetaMixin extends ObjectMeta {
 
-      @JsonIgnore
-      private List<ManagedFieldsEntry> managedFields;
+        @JsonIgnore
+        private List<ManagedFieldsEntry> managedFields;
 
-      @JsonIgnore
-      public abstract List<ManagedFieldsEntry> getManagedFields();
+        @JsonIgnore
+        public abstract List<ManagedFieldsEntry> getManagedFields();
 
     }
 }

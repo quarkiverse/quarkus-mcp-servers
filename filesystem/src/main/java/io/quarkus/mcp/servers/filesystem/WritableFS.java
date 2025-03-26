@@ -8,10 +8,11 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.inject.Inject;
+
 import io.quarkiverse.mcp.server.Tool;
 import io.quarkiverse.mcp.server.ToolArg;
 import io.quarkiverse.mcp.server.ToolCallException;
-import jakarta.inject.Inject;
 
 public class WritableFS {
 

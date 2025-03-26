@@ -1,5 +1,6 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
 package io.quarkus.mcp.servers.jfx;
+
 //JAVA 17+
 //DEPS org.openjfx:javafx-controls:21:${os.detected.jfxname}
 //DEPS org.openjfx:javafx-graphics:21:${os.detected.jfxname}
@@ -7,7 +8,6 @@ package io.quarkus.mcp.servers.jfx;
 //DEPS io.quarkiverse.fx:quarkus-fx:0.9.1
 //DEPS io.quarkus:quarkus-bom:3.19.2@pom
 //DEPS io.quarkiverse.mcp:quarkus-mcp-server-stdio:1.0.0.Beta5
-
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -19,14 +19,15 @@ import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
+
 import io.quarkiverse.fx.FxPostStartupEvent;
 import io.quarkiverse.mcp.server.ImageContent;
 import io.quarkiverse.mcp.server.Tool;
 import io.quarkiverse.mcp.server.ToolArg;
 import io.quarkiverse.mcp.server.ToolCallException;
 import io.quarkiverse.mcp.server.WrapBusinessError;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
@@ -52,31 +53,31 @@ public class MCPServerJFX {
     private static double canvasWidth = 800;
     private static double canvasHeight = 600;
 
-        public void start(@Observes final FxPostStartupEvent event) {
-            stage = event.getPrimaryStage();
+    public void start(@Observes final FxPostStartupEvent event) {
+        stage = event.getPrimaryStage();
 
+    }
+
+    void runAndWait(Runnable runnable) {
+        final CountDownLatch latchToWaitForJavaFx = new CountDownLatch(1);
+
+        Platform.runLater(() -> {
+            runnable.run();
+            latchToWaitForJavaFx.countDown();
+        });
+
+        try {
+            latchToWaitForJavaFx.await(3, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            throw new ToolCallException("Failed to wait for JavaFX to finish");
         }
+    }
 
-        void runAndWait(Runnable runnable) {
-            final CountDownLatch latchToWaitForJavaFx = new CountDownLatch(1);
+    @Tool(description = "Launch a new drawing canvas")
+    String launchCanvas() {
 
-            Platform.runLater(() -> {
-                runnable.run();
-                latchToWaitForJavaFx.countDown();
-            });
-
-            try {
-                latchToWaitForJavaFx.await(3, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                throw new ToolCallException("Failed to wait for JavaFX to finish");
-            }
-        }
-
-        @Tool(description = "Launch a new drawing canvas")
-        String launchCanvas() {
-
-            Platform.runLater(() -> {
-            if(stage.getScene() != null) {
+        Platform.runLater(() -> {
+            if (stage.getScene() != null) {
                 stage.hide();
             }
 
@@ -90,27 +91,27 @@ public class MCPServerJFX {
             Scene scene = new Scene(new StackPane(canvas), canvasWidth, canvasHeight);
             stage.setScene(scene);
             stage.show();
-            });
+        });
 
-            return "Canvas launched with dimensions: " + canvasWidth + "x" + canvasHeight;
-        }
+        return "Canvas launched with dimensions: " + canvasWidth + "x" + canvasHeight;
+    }
 
-        @Tool(description = "Close the drawing canvas")
-        String closeCanvas() {
-            Platform.runLater(() -> {
-                stage.hide();
-            });
-            return "Canvas closed";
-        }
+    @Tool(description = "Close the drawing canvas")
+    String closeCanvas() {
+        Platform.runLater(() -> {
+            stage.hide();
+        });
+        return "Canvas closed";
+    }
 
     @Tool(description = "Draw a line on the canvas")
     String drawLine(
-        @ToolArg(description = "Starting X coordinate") double startX,
-        @ToolArg(description = "Starting Y coordinate") double startY,
-        @ToolArg(description = "Ending X coordinate") double endX,
-        @ToolArg(description = "Ending Y coordinate") double endY
-    ) {
-        if (gc == null) return "Canvas not initialized. Launch canvas first.";
+            @ToolArg(description = "Starting X coordinate") double startX,
+            @ToolArg(description = "Starting Y coordinate") double startY,
+            @ToolArg(description = "Ending X coordinate") double endX,
+            @ToolArg(description = "Ending Y coordinate") double endY) {
+        if (gc == null)
+            return "Canvas not initialized. Launch canvas first.";
 
         Platform.runLater(() -> {
             gc.strokeLine(startX, startY, endX, endY);
@@ -120,13 +121,13 @@ public class MCPServerJFX {
 
     @Tool(description = "Draw a rectangle on the canvas")
     String drawRectangle(
-        @ToolArg(description = "X coordinate") double x,
-        @ToolArg(description = "Y coordinate") double y,
-        @ToolArg(description = "Width") double width,
-        @ToolArg(description = "Height") double height,
-        @ToolArg(description = "Fill the rectangle (true/false)") boolean fill
-    ) {
-        if (gc == null) return "Canvas not initialized. Launch canvas first.";
+            @ToolArg(description = "X coordinate") double x,
+            @ToolArg(description = "Y coordinate") double y,
+            @ToolArg(description = "Width") double width,
+            @ToolArg(description = "Height") double height,
+            @ToolArg(description = "Fill the rectangle (true/false)") boolean fill) {
+        if (gc == null)
+            return "Canvas not initialized. Launch canvas first.";
 
         Platform.runLater(() -> {
             if (fill) {
@@ -140,12 +141,12 @@ public class MCPServerJFX {
 
     @Tool(description = "Draw a circle on the canvas")
     String drawCircle(
-        @ToolArg(description = "Center X coordinate") double centerX,
-        @ToolArg(description = "Center Y coordinate") double centerY,
-        @ToolArg(description = "Radius") double radius,
-        @ToolArg(description = "Fill the circle (true/false)") boolean fill
-    ) {
-        if (gc == null) return "Canvas not initialized. Launch canvas first.";
+            @ToolArg(description = "Center X coordinate") double centerX,
+            @ToolArg(description = "Center Y coordinate") double centerY,
+            @ToolArg(description = "Radius") double radius,
+            @ToolArg(description = "Fill the circle (true/false)") boolean fill) {
+        if (gc == null)
+            return "Canvas not initialized. Launch canvas first.";
 
         Platform.runLater(() -> {
             if (fill) {
@@ -165,22 +166,22 @@ public class MCPServerJFX {
             @ToolArg(description = "Radius Y") double radiusY,
             @ToolArg(description = "Start angle in degrees") double startAngle,
             @ToolArg(description = "Arc extent in degrees") double arcExtent,
-            @ToolArg(description = "Fill the arc (true/false)") boolean fill
-    ) {
-        if (gc == null) return "Canvas not initialized. Launch canvas first.";
+            @ToolArg(description = "Fill the arc (true/false)") boolean fill) {
+        if (gc == null)
+            return "Canvas not initialized. Launch canvas first.";
 
         Platform.runLater(() -> {
             if (fill) {
                 gc.fillArc(x - radiusX, y - radiusY, radiusX * 2, radiusY * 2,
-                          startAngle, arcExtent, ArcType.ROUND);
+                        startAngle, arcExtent, ArcType.ROUND);
             } else {
                 gc.strokeArc(x - radiusX, y - radiusY, radiusX * 2, radiusY * 2,
-                            startAngle, arcExtent, ArcType.ROUND);
+                        startAngle, arcExtent, ArcType.ROUND);
             }
         });
 
         return String.format("Arc drawn at (%.1f,%.1f) with radii: %.1fx%.1f",
-                           x, y, radiusX, radiusY);
+                x, y, radiusX, radiusY);
     }
 
     @Tool(description = "Draw a cubic bezier curve")
@@ -196,9 +197,9 @@ public class MCPServerJFX {
             @ToolArg(description = "Stroke color (e.g., BLACK, #FF0000)") String strokeColor,
             @ToolArg(description = "Fill color (optional, e.g., BLUE, #00FF00)") String fillColor,
             @ToolArg(description = "Line width") double lineWidth,
-            @ToolArg(description = "Close path (true/false)") boolean closePath
-    ) {
-        if (gc == null) return "Canvas not initialized. Launch canvas first.";
+            @ToolArg(description = "Close path (true/false)") boolean closePath) {
+        if (gc == null)
+            return "Canvas not initialized. Launch canvas first.";
 
         Platform.runLater(() -> {
             gc.save(); // Save the current state
@@ -227,7 +228,7 @@ public class MCPServerJFX {
         });
 
         return String.format("Bezier curve drawn from (%.1f,%.1f) to (%.1f,%.1f)",
-                           startX, startY, endX, endY);
+                startX, startY, endX, endY);
     }
 
     @Tool(description = "Create a linear gradient fill")
@@ -236,9 +237,9 @@ public class MCPServerJFX {
             @ToolArg(description = "Start Y") double startY,
             @ToolArg(description = "End X") double endX,
             @ToolArg(description = "End Y") double endY,
-            @ToolArg(description = "List of color stops (format: [0.0,#color1,0.5,#color2,...]") String[] stops
-    ) {
-        if (gc == null) return "Canvas not initialized. Launch canvas first.";
+            @ToolArg(description = "List of color stops (format: [0.0,#color1,0.5,#color2,...]") String[] stops) {
+        if (gc == null)
+            return "Canvas not initialized. Launch canvas first.";
 
         Platform.runLater(() -> {
             List<Stop> gradientStops = new ArrayList<>();
@@ -249,9 +250,8 @@ public class MCPServerJFX {
             }
 
             LinearGradient gradient = new LinearGradient(
-                startX, startY, endX, endY, false, CycleMethod.NO_CYCLE,
-                gradientStops
-            );
+                    startX, startY, endX, endY, false, CycleMethod.NO_CYCLE,
+                    gradientStops);
             gc.setFill(gradient);
         });
 
@@ -262,9 +262,9 @@ public class MCPServerJFX {
     String drawPolygon(
             @ToolArg(description = "Array of X coordinates") double[] xPoints,
             @ToolArg(description = "Array of Y coordinates") double[] yPoints,
-            @ToolArg(description = "Fill the polygon (true/false)") boolean fill
-    ) {
-        if (gc == null) return "Canvas not initialized. Launch canvas first.";
+            @ToolArg(description = "Fill the polygon (true/false)") boolean fill) {
+        if (gc == null)
+            return "Canvas not initialized. Launch canvas first.";
         if (xPoints.length != yPoints.length)
             return "Error: X and Y arrays must have the same length";
 
@@ -292,9 +292,9 @@ public class MCPServerJFX {
             @ToolArg(description = "X coordinate") double x,
             @ToolArg(description = "Y coordinate") double y,
             @ToolArg(description = "Font size") double fontSize,
-            @ToolArg(description = "Font family") String fontFamily
-    ) {
-        if (gc == null) return "Canvas not initialized. Launch canvas first.";
+            @ToolArg(description = "Font family") String fontFamily) {
+        if (gc == null)
+            return "Canvas not initialized. Launch canvas first.";
 
         Platform.runLater(() -> {
             Font font = new Font(fontFamily, fontSize);
@@ -305,12 +305,11 @@ public class MCPServerJFX {
         return String.format("Text '%s' drawn at (%.1f,%.1f)", text, x, y);
     }
 
-
     @Tool(description = "Set the drawing color")
     String setColor(
-        @ToolArg(description = "Color name (e.g., BLACK, RED, BLUE, GREEN) or hexadecimal format: #RRGGBB") String colorName
-    ) {
-        if (gc == null) return "Canvas not initialized. Launch canvas first.";
+            @ToolArg(description = "Color name (e.g., BLACK, RED, BLUE, GREEN) or hexadecimal format: #RRGGBB") String colorName) {
+        if (gc == null)
+            return "Canvas not initialized. Launch canvas first.";
 
         try {
             Color color = Color.valueOf(colorName.toUpperCase());
@@ -326,7 +325,8 @@ public class MCPServerJFX {
 
     @Tool(description = "Clear the canvas")
     String clearCanvas() {
-        if (gc == null) return "Canvas not initialized. Launch canvas first.";
+        if (gc == null)
+            return "Canvas not initialized. Launch canvas first.";
 
         Platform.runLater(() -> {
             gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -336,9 +336,9 @@ public class MCPServerJFX {
 
     @Tool(description = "Set line width for drawing")
     String setLineWidth(
-        @ToolArg(description = "Line width in pixels") double width
-    ) {
-        if (gc == null) return "Canvas not initialized. Launch canvas first.";
+            @ToolArg(description = "Line width in pixels") double width) {
+        if (gc == null)
+            return "Canvas not initialized. Launch canvas first.";
 
         Platform.runLater(() -> {
             gc.setLineWidth(width);
@@ -348,12 +348,13 @@ public class MCPServerJFX {
 
     @Tool(description = "Get the current canvas image as base64-encoded string")
     ImageContent getCanvasImage() {
-        if (gc == null) return null;
+        if (gc == null)
+            return null;
 
         try {
             final WritableImage[] writableImage = new WritableImage[1];
             Platform.runLater(() -> {
-                writableImage[0] = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
+                writableImage[0] = new WritableImage((int) canvas.getWidth(), (int) canvas.getHeight());
                 canvas.snapshot(new SnapshotParameters(), writableImage[0]);
             });
 
