@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.quarkus.mcp.servers</groupId>
     <artifactId>mcp-server-jfx</artifactId>
@@ -9,6 +10,8 @@
         <artifactId>mcp-servers-parent</artifactId>
         <version>999-SNAPSHOT</version>
     </parent>
+
+    <name>MCP Servers :: JFX</name>
 
     <properties>
 
@@ -23,15 +26,16 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-           
+
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
-     <dependency><groupId>io.quarkus.mcp.servers</groupId>
-    <artifactId>mcp-server-shared</artifactId>
-    <version>${project.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>io.quarkus.mcp.servers</groupId>
+            <artifactId>mcp-server-shared</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-jackson</artifactId>
@@ -45,27 +49,27 @@
             <artifactId>quarkus-arc</artifactId>
         </dependency>
 
-            <dependency>
-                <groupId>io.quarkiverse.fx</groupId>
-                <artifactId>quarkus-fx</artifactId>
-                <version>0.9.1</version>
-           </dependency>    
-           
-            <dependency>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-swing</artifactId>
-                <version>21</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-controls</artifactId>
-                <version>21</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-graphics</artifactId>
-                <version>21</version>
-            </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.fx</groupId>
+            <artifactId>quarkus-fx</artifactId>
+            <version>0.9.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>21</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>21</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>21</version>
+        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5</artifactId>
@@ -81,7 +85,7 @@
             <artifactId>langchain4j-mcp</artifactId>
             <scope>test</scope>
         </dependency>
-       
+
     </dependencies>
 
     <build>
@@ -133,7 +137,8 @@
                 <configuration>
                     <systemPropertyVariables>
                         <native.image.path>
-                            ${project.build.directory}/${project.build.finalName}-runner</native.image.path>
+                            ${project.build.directory}/${project.build.finalName}-runner
+                        </native.image.path>
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <maven.home>${maven.home}</maven.home>
                     </systemPropertyVariables>
@@ -142,5 +147,5 @@
         </plugins>
     </build>
 
-    
+
 </project>

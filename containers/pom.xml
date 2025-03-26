@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--suppress MavenModelInspection -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.quarkus.mcp.servers</groupId>
     <artifactId>mcp-server-containers</artifactId>
@@ -10,6 +11,8 @@
         <artifactId>mcp-servers-parent</artifactId>
         <version>999-SNAPSHOT</version>
     </parent>
+
+    <name>MCP Servers :: Containers</name>
 
     <properties>
         <skipITs>false</skipITs>
@@ -29,21 +32,21 @@
 
     <dependencies>
         <dependency>
-        <groupId>io.quarkus.mcp.servers</groupId>
-    <artifactId>mcp-server-shared</artifactId>
-       <version>${project.version}</version>
+            <groupId>io.quarkus.mcp.servers</groupId>
+            <artifactId>mcp-server-shared</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.docker-java</groupId>
             <artifactId>docker-java-core</artifactId>
         </dependency>
         <!-- should we use another transport? whats the default used by testcontainers?-->
-         <dependency>
+        <dependency>
             <groupId>com.github.docker-java</groupId>
             <artifactId>docker-java-transport-httpclient5</artifactId>
         </dependency>
         <!-- Add only those dependencies that are actually needed to minimize the native image size -->
-       
+
 
         <dependency>
             <groupId>io.quarkus</groupId>

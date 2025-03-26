@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.quarkus.mcp.servers</groupId>
     <artifactId>mcp-server-jdbc</artifactId>
@@ -9,9 +10,11 @@
         <artifactId>mcp-servers-parent</artifactId>
         <version>999-SNAPSHOT</version>
     </parent>
-    
+
+    <name>MCP Servers :: JDBC</name>
+
     <properties>
-       
+
     </properties>
 
     <dependencyManagement>
@@ -27,10 +30,11 @@
     </dependencyManagement>
 
     <dependencies>
-     <dependency><groupId>io.quarkus.mcp.servers</groupId>
-    <artifactId>mcp-server-shared</artifactId>
-    <version>${project.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>io.quarkus.mcp.servers</groupId>
+            <artifactId>mcp-server-shared</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-jackson</artifactId>
@@ -43,10 +47,8 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
-       
-       
 
-        
+
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5</artifactId>
@@ -102,7 +104,8 @@
                 </executions>
                 <configuration>
                     <systemPropertyVariables>
-                        <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
+                        <native.image.path>${project.build.directory}/${project.build.finalName}-runner
+                        </native.image.path>
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <maven.home>${maven.home}</maven.home>
                     </systemPropertyVariables>
@@ -111,7 +114,7 @@
         </plugins>
     </build>
 
-   
+
     <profiles>
         <profile>
             <id>h2</id>
@@ -135,7 +138,8 @@
             </dependencies>
             <!-- assume running container with postgres : i.e. podman run -p 5432:5432 -d sakiladb/postgres:latest-->
             <properties>
-                <jvm.args>-Djdbc.url=jdbc:postgresql://localhost:5432/sakila?user=sakila&amp;password=p_ssW0rd</jvm.args>
+                <jvm.args>-Djdbc.url=jdbc:postgresql://localhost:5432/sakila?user=sakila&amp;password=p_ssW0rd
+                </jvm.args>
             </properties>
         </profile>
         <profile>

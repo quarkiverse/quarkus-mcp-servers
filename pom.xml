@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.quarkiverse</groupId>
         <artifactId>quarkiverse-parent</artifactId>
         <version>19</version>
     </parent>
+    <name>MCP Servers :: Parent</name>
     <groupId>io.quarkiverse.mcp.servers</groupId>
     <artifactId>mcp-servers-parent</artifactId>
     <version>999-SNAPSHOT</version>
@@ -33,9 +35,9 @@
         <assertj.version>3.27.3</assertj.version>
         <surefire-plugin.version>3.5.0</surefire-plugin.version>
 
-<!--
-         <mcp.server.version>999-SNAPSHOT</mcp.server.version>
-    -->
+        <!--
+                 <mcp.server.version>999-SNAPSHOT</mcp.server.version>
+            -->
         <mcp.server.version>1.0.0.Beta5</mcp.server.version>
         <langchain4j.version>1.0.0-beta2</langchain4j.version>
 
@@ -43,49 +45,49 @@
 
     <dependencyManagement>
         <dependencies>
-          <dependency>
-            <!-- Used to generate MCP clients in Integration Tests -->
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-mcp</artifactId>
-            <version>${langchain4j.version}</version>
-            <scope>test</scope>
-          </dependency>
-          <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>${assertj.version}</version>
-            <scope>test</scope>
-          </dependency>
+            <dependency>
+                <!-- Used to generate MCP clients in Integration Tests -->
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-mcp</artifactId>
+                <version>${langchain4j.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj.version}</version>
+                <scope>test</scope>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
 
-<!-- TODO: should this be moved to each module instead?-->
-<dependencies>
-          <dependency>
+    <!-- TODO: should this be moved to each module instead?-->
+    <dependencies>
+        <dependency>
             <groupId>io.quarkiverse.mcp</groupId>
             <artifactId>quarkus-mcp-server-stdio</artifactId>
             <version>${mcp.server.version}</version>
-          </dependency>
-          <dependency>
+        </dependency>
+        <dependency>
             <groupId>io.quarkiverse.mcp</groupId>
             <artifactId>quarkus-mcp-server-sse</artifactId>
             <version>${mcp.server.version}</version>
-          </dependency>
-</dependencies>
+        </dependency>
+    </dependencies>
 
-<build>
-    <extensions>
-      <extension>
-        <groupId>kr.motd.maven</groupId>
-        <artifactId>os-maven-plugin</artifactId>
-        <version>1.7.0</version>
-      </extension>
-    </extensions>
-</build>
+    <build>
+        <extensions>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>1.7.0</version>
+            </extension>
+        </extensions>
+    </build>
 
-<profiles>
-     <profile>
+    <profiles>
+        <profile>
             <id>sse</id>
             <activation>
                 <property>
@@ -119,7 +121,7 @@
         <profile>
             <id>earlyaccess</id>
             <build>
-             <finalName>${project.artifactId}</finalName>
+                <finalName>${project.artifactId}</finalName>
             </build>
         </profile>
 
@@ -133,8 +135,9 @@
             <properties>
                 <skipITs>false</skipITs>
                 <quarkus.native.enabled>true</quarkus.native.enabled>
-                <quarkus.package.output-name>${project.artifactId}-${os.detected.classifier}</quarkus.package.output-name>
+                <quarkus.package.output-name>${project.artifactId}-${os.detected.classifier}
+                </quarkus.package.output-name>
             </properties>
         </profile>
-</profiles>
+    </profiles>
 </project>
