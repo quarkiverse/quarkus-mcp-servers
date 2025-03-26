@@ -2,7 +2,6 @@
 <!--suppress MavenModelInspection -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.quarkus.mcp.servers</groupId>
     <artifactId>mcp-server-kubernetes</artifactId>
 
     <parent>
@@ -29,7 +28,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.quarkus.mcp.servers</groupId>
+            <groupId>io.quarkiverse.mcp.servers</groupId>
             <artifactId>mcp-server-shared</artifactId>
             <version>${project.version}</version>
         </dependency>
