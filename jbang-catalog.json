@@ -18,10 +18,10 @@
       "java": "17+"
     },
     "mcp-server-jfx-script": {
-      "script-ref": "jfx/src/main/java/io/quarkus/mcp/servers/jfx/MCPServerJFX.java"
+      "script-ref": "jfx/src/main/java/io/quarkiverse/mcp/servers/jfx/MCPServerJFX.java"
     },
     "jfx-script": {
-      "script-ref": "jfx/src/main/java/io/quarkus/mcp/servers/jfx/MCPServerJFX.java"
+      "script-ref": "jfx/src/main/java/io/quarkiverse/mcp/servers/jfx/MCPServerJFX.java"
     },
     "mcp-server-jfx": {
       "script-ref": "https://github.com/quarkiverse/quarkus-mcp-servers/releases/download/early-access/mcp-server-jfx.jar",
