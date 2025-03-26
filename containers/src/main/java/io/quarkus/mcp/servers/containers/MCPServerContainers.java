@@ -20,6 +20,9 @@ import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 
+import io.quarkiverse.mcp.server.Prompt;
+import io.quarkiverse.mcp.server.PromptMessage;
+import io.quarkiverse.mcp.server.TextContent;
 import io.quarkiverse.mcp.server.Tool;
 import io.quarkiverse.mcp.server.ToolArg;
 import io.quarkus.logging.Log;
@@ -92,5 +95,21 @@ public class MCPServerContainers {
     return logs;
   }
 
+  @Prompt(description = "Service Architecture Diagram") 
+  PromptMessage service_architecture_diagram() { 
+      return PromptMessage.withUserRole(new TextContent(
+          """
+          Generate a service architecture diagram showing how my containers interconnect to form complete applications.
+          """
+      ));
+  }
 
+  @Prompt(description = "Port Allocation Overview") 
+  PromptMessage port_allocation_overview() { 
+    return PromptMessage.withUserRole(new TextContent(
+        """
+        Create a visualization of all port mappings across containers, highlighting exposed ports and potential conflicts.
+        """
+    ));
+  }
 }

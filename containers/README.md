@@ -6,7 +6,7 @@ The server is implemented using Quarkus MCP and the Docker JavaClient.
 
 Connects to your default configured docker socket and thus should work with any OCI/Container compatible engine, such as Docker, Podman, etc.
 
-![](images/containers.png)
+![](images/containers-demo.png)
 
 ## General Usage 
 

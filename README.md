@@ -17,7 +17,7 @@ These also work in MCP enabled LLM applications, like Claude Desktop. You can fi
 The `jdbc` server can be used to store and retrieve data from a database given just a JDBC URL. You can use any JDBC database, like Postgres, MySQL, Oracle, Sqlite, etc.
 
 ```shell
-jbang -q jdbc@quarkiverse/quarkus-mcp-servers
+jbang jdbc@quarkiverse/quarkus-mcp-servers
 ```
 
 See more in the [jdbc readme](jdbc/README.md).
@@ -29,7 +29,7 @@ See more in the [jdbc readme](jdbc/README.md).
 The `filesystem` server is a file system server that can be used to serve files from a file system.
 
 ```shell
-jbang -q filesystem@quarkiverse/quarkus-mcp-servers [path1] [path2] ...
+jbang filesystem@quarkiverse/quarkus-mcp-servers [path1] [path2] ...
 ```
 
 See more in the [filesystem readme](filesystem/README.md).
@@ -41,7 +41,7 @@ See more in the [filesystem readme](filesystem/README.md).
 The `jfx` server exposes a canvas that can be used to make drawings using JavaFX.
 
 ```shell
-jbang -q jfx@quarkiverse/quarkus-mcp-servers
+jbang jfx@quarkiverse/quarkus-mcp-servers
 ```
 
 See more in the [jfx readme](jfx/README.md).
@@ -52,8 +52,18 @@ See more in the [jfx readme](jfx/README.md).
 The `kubernetes` server can be used to interact with a Kubernetes cluster.
 
 ```shell
-jbang -q kubernetes@quarkiverse/quarkus-mcp-servers
+jbang kubernetes@quarkiverse/quarkus-mcp-servers
 ```
+
+### [containers](containers)
+
+The 'containers' server lets you work with Docker/Podman/OCI compatible container engines.
+
+```shell
+jbang containers@quarkiverse/quarkus-mcp-servers
+```
+
+![](containers/images/containers-demo.png)
 
 ## Other Quarkus MCP based servers
 
