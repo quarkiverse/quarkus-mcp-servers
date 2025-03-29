@@ -149,7 +149,7 @@ To get more detailed logging you can add the following parameters to the jbang c
 Example:
 
 ```shell
-jbang -Dquarkus.log.file.enable=true -Dquarkus.log.file.path=${user.home}/mcp-server-jdbc.log jdbc@quarkiverse/quarkus-mcp-servers jdbc:h2:mem:testdb
+jbang -Dquarkus.log.file.enable=true -Dquarkus.log.file.path=${user.home}/mcp-jdbc.log jdbc@quarkiverse/quarkus-mcp-servers jdbc:h2:mem:testdb
 ```
 
 ## Native Image/Executable
