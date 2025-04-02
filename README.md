@@ -79,6 +79,14 @@ jbang containers@quarkiverse/quarkus-mcp-servers
 
 ![](containers/images/containers-demo.png)
 
+### [wolfram](wolfram)
+
+The `wolfram` server can be used to perform web search optimized for use by a large language model through the Wolfram Alpha LLM API.
+
+```shell
+jbang wolfram@quarkiverse/quarkus-mcp-servers
+```
+
 ## Other Quarkus MCP based servers
 
 ### [WildFly](https://github.com/wildfly-extras/wildfly-mcp)
