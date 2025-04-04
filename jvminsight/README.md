@@ -2,8 +2,9 @@
 
 This Model Context Protocol(MCP) server enables Large Language Models (LLMs) to get insights into JVM applications.
 
-![](images/jvminsight-demo.png)
+This jvminsights lets you attach to jvm processes on your local machine and get info about it.
 
+Also lets you execute tools found in `bin` folder of `java.home`.
 
 ## General Usage 
 
@@ -40,7 +41,7 @@ Add this to your `claude_desktop.json` or `server_config.json` file:
     "jdbc": {
       "command": "jbang",
       "args": [
-        "mcp-server-jvminsight@quarkiverse/quarkus-mcp-server"
+        "mcp-server-jvminsight@quarkiverse/quarkus-mcp-servers"
       ]
     }
   }
