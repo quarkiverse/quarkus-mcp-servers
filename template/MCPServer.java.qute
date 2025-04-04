@@ -1,4 +1,4 @@
-package io.quarkus.mcp.servers.{baseName};
+package io.quarkiverse.mcp.servers.{baseName};
 
 import io.quarkiverse.mcp.server.Prompt;
 import io.quarkiverse.mcp.server.PromptArg;
