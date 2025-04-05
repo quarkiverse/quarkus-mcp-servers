@@ -35,7 +35,7 @@ import io.quarkus.logging.Log;
 import io.quarkus.qute.TemplateContents;
 import io.quarkus.qute.TemplateInstance;
 
-public class MCPServerjvminsight {
+public class MCPServerJvmInsight {
 
     Map<String, VirtualMachine> vms = new HashMap<>();
 
