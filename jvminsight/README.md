@@ -25,7 +25,7 @@ Below are the MCP components provided by this server.
 
 ### Tools 
 
-* **hello_world** - say hello to the user
+* **** - say hello to the user
 
 ### Prompts
 

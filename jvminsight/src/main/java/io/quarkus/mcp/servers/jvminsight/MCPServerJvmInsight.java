@@ -277,7 +277,7 @@ public class MCPServerJvmInsight {
                     3. Next steps based on possible findings
 
                     Offer user to make a visual of the relevant processs memory, threads and resource consumption.
-                    
+
                     Remember to use the tools available in the environment and explain your reasoning and interpretation of the results at each step.
                 """)
         record prompt(String processIdentifier, String investigationFocus) implements TemplateInstance {
