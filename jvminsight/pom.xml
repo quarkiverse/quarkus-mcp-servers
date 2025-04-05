@@ -30,6 +30,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.zeroturnaround</groupId>
+            <artifactId>zt-exec</artifactId>
+            <version>1.12</version>
+        </dependency>
+
+        <dependency>
             <groupId>io.quarkiverse.mcp.servers</groupId>
             <artifactId>mcp-server-shared</artifactId>
             <version>${project.version}</version>
