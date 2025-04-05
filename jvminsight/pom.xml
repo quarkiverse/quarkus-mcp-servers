@@ -30,7 +30,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.quarkus.mcp.servers</groupId>
+            <groupId>io.quarkiverse.mcp.servers</groupId>
             <artifactId>mcp-server-shared</artifactId>
             <version>${project.version}</version>
         </dependency>
