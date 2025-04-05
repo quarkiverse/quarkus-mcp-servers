@@ -21,6 +21,7 @@
         <module>jfx</module>
         <module>kubernetes</module>
         <module>containers</module>
+        <module>jvminsight</module>
     </modules>
 
     <url>https://github.com/quarkiverse/quarkus-mcp-servers</url>
