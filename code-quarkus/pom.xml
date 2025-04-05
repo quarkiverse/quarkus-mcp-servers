@@ -12,6 +12,7 @@
         <version>999-SNAPSHOT</version>
     </parent>
 
+    <name>MCP Server :: Code Quarkus</name>
     <properties>
 
     </properties>

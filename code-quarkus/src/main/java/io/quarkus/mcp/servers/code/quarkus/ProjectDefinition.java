@@ -1,7 +1,8 @@
 package io.quarkus.mcp.servers.code.quarkus;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ProjectDefinition(
