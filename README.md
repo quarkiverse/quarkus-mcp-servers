@@ -26,9 +26,19 @@ jbang jdbc@quarkiverse/quarkus-mcp-servers
 
 See more in the [jdbc readme](jdbc/README.md).
 
-### [filesystem](filesystem)
+### [jvminsight](jvminsight)
 
-![](filesystem/images/filesystem-demo.png)
+![](jvminsight/images/jvminsight-demo.png)
+
+The `jvminsight` server is a server that can be used to inspect a running JVM process.
+
+```shell
+jbang jvminsight@quarkiverse/quarkus-mcp-servers
+```
+
+See more in the [jvminsight readme](jvminsight/README.md).
+
+### [filesystem](filesystem)
 
 The `filesystem` server is a file system server that can be used to serve files from a file system.
 

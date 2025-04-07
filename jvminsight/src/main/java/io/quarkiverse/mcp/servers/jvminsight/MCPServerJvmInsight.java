@@ -1,4 +1,4 @@
-package io.quarkus.mcp.servers.jvminsight;
+package io.quarkiverse.mcp.servers.jvminsight;
 
 import java.io.IOException;
 import java.nio.file.Files;
