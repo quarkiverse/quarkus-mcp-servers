@@ -103,6 +103,7 @@ public class MCPServerJDBC {
                 table.put("TABLE_CAT", rs.getString("TABLE_CAT"));
                 table.put("TABLE_SCHEM", rs.getString("TABLE_SCHEM"));
                 table.put("TABLE_NAME", rs.getString("TABLE_NAME"));
+                table.put("REMARKS", rs.getString("REMARKS"));
                 tables.add(table);
             }
             return mapper.writeValueAsString(tables);
