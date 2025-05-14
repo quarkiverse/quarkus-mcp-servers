@@ -77,6 +77,7 @@ class jdbc implements Callable<Integer> {
 
         // use the jbang command from env or assume on path
         String jbangcmd = System.getenv("JBANG_LAUNCH_CMD");
+        
         if (jbangcmd == null) {
             String os = System.getProperty("os.name").toLowerCase();
             if (os.contains("win")) {
@@ -84,6 +85,10 @@ class jdbc implements Callable<Integer> {
             } else {
                 jbangcmd = "jbang";
             }
+        } else if(jbangcmd.endsWith(".ps1")) {
+            //dumb hack to avoid .ps1 files on windows
+            //https://github.com/quarkiverse/quarkus-mcp-servers/issues/65
+            jbangcmd = jbangcmd.substring(0, jbangcmd.length() - 4) + ".cmd";
         }
 
         command.add(jbangcmd);
