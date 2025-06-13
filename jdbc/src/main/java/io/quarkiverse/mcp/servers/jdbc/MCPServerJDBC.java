@@ -90,23 +90,50 @@ public class MCPServerJDBC {
     }
 
     @Tool(description = "List all tables in the jdbc database")
-    String list_tables(McpLog log) {
-        log.debug("Listing tables");
-        log.error("Listing tables");
+    String list_tables(
+            @ToolArg(description = "Page number for pagination (starting from 1)", required = false) Integer page,
+            @ToolArg(description = "Number of tables per page (default: 50)", required = false) Integer size,
+            @ToolArg(description = "Schema name to filter tables", required = false) String schema,
+            McpLog log) {
+        boolean paginate = (page != null) || (size != null);
+        int currentPage = (page == null) ? 1 : page;
+        int pageSize = (size == null) ? 50 : size;
+
         try (Connection conn = getConnection()) {
             DatabaseMetaData metaData = conn.getMetaData();
-            ResultSet rs = metaData.getTables(null, null, "%", new String[] { "TABLE" });
+            ResultSet rs = metaData.getTables(null, schema, "%", new String[] { "TABLE" });
 
-            List<Map<String, String>> tables = new ArrayList<>();
+            List<Map<String, String>> allTables = new ArrayList<>();
             while (rs.next()) {
                 Map<String, String> table = new HashMap<>();
                 table.put("TABLE_CAT", rs.getString("TABLE_CAT"));
                 table.put("TABLE_SCHEM", rs.getString("TABLE_SCHEM"));
                 table.put("TABLE_NAME", rs.getString("TABLE_NAME"));
                 table.put("REMARKS", rs.getString("REMARKS"));
-                tables.add(table);
+                allTables.add(table);
             }
-            return mapper.writeValueAsString(tables);
+
+            int totalCount = allTables.size();
+            List<Map<String, String>> tables = allTables;
+
+            if (paginate) {
+                int fromIndex = (currentPage - 1) * pageSize;
+                if (fromIndex > totalCount) {
+                    fromIndex = totalCount;
+                }
+                int toIndex = Math.min(fromIndex + pageSize, totalCount);
+                tables = allTables.subList(fromIndex, toIndex);
+            }
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("total_count", totalCount);
+            if (paginate) {
+                result.put("page", currentPage);
+                result.put("page_size", pageSize);
+            }
+            result.put("tables", tables);
+
+            return mapper.writeValueAsString(result);
         } catch (Exception e) {
             throw new ToolCallException("Failed to list tables: " + e.getMessage(), e);
         }
