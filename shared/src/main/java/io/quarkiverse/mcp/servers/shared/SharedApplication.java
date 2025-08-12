@@ -57,7 +57,7 @@ public class SharedApplication {
                         exception.printStackTrace();
                     }
                     // If we are not running in dev mode, exit the application
-                    if (!LaunchMode.isDev())
+                    if (!LaunchMode.current().isDev())
                         System.exit(exitCode);
                 },
                 args);
