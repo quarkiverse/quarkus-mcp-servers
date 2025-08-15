@@ -1,4 +1,5 @@
 # Model Context Protocol Servers in Quarkus/Java
+[![Trust Score](https://archestra.ai/mcp-catalog/api/badge/quality/quarkiverse/quarkus-mcp-servers)](https://archestra.ai/mcp-catalog/quarkiverse__quarkus-mcp-servers)
 
 This project contains [Model Context Protocol](https://modelcontextprotocol.io/) servers,
 implemented in Java using the [Quarkus MCP server framework](https://github.com/quarkiverse/quarkus-mcp-server).
