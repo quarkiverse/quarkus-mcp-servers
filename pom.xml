@@ -44,7 +44,7 @@
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>3.20.1</quarkus.platform.version>
         <skipITs>true</skipITs>
-        <assertj.version>3.27.3</assertj.version>
+        <assertj.version>3.27.7</assertj.version>
         <surefire-plugin.version>3.5.0</surefire-plugin.version>
 
 <!--
