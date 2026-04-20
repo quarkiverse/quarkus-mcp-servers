@@ -2,8 +2,7 @@ package io.quarkiverse.mcp.servers.kubernetes;
 
 import java.util.List;
 
-import javax.annotation.Priority;
-
+import jakarta.annotation.Priority;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
