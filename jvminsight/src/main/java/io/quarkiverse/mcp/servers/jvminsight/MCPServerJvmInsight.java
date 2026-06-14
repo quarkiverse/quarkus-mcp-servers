@@ -26,6 +26,7 @@ import com.sun.tools.attach.AttachNotSupportedException;
 import com.sun.tools.attach.VirtualMachine;
 
 import io.quarkiverse.mcp.server.Prompt;
+import io.quarkiverse.mcp.server.PromptArg;
 import io.quarkiverse.mcp.server.PromptMessage;
 import io.quarkiverse.mcp.server.TextContent;
 import io.quarkiverse.mcp.server.Tool;
@@ -209,8 +210,8 @@ public class MCPServerJvmInsight {
 
     @Prompt(description = "Investigate and analyze a Java process running on the system")
     PromptMessage investigateJavaProcess(
-            @ToolArg(description = "Process ID or descriptive name of the Java process to investigate") String processIdentifier,
-            @ToolArg(description = "Optional: Specific areas to focus on (e.g., 'memory', 'threads', 'gc', 'all')", required = false) String investigationFocus) {
+            @PromptArg(description = "Process ID or descriptive name of the Java process to investigate") String processIdentifier,
+            @PromptArg(description = "Optional: Specific areas to focus on (e.g., 'memory', 'threads', 'gc', 'all')", required = false) String investigationFocus) {
 
         @TemplateContents("""
                     # Java Process Investigation Assistant
